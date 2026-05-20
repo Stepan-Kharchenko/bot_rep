@@ -8,8 +8,7 @@ def insert(table:str, columns:tuple, values:list):
         lenght,k = len(columns),0
         s = "("+",".join("?" for i in range(lenght))+")"
         for i in values:
-            if len(i)!=lenght:
-                raise Exception("Несовпадение количества значений и полей")
+            if len(i)!=lenght: raise Exception("Несовпадение количества значений и полей")
         command = f"""INSERT INTO {table} ({','.join(columns)})
     VALUES {',\n'.join(s for i in range(len(values)))};"""
         cursor.execute(command,[i for l in values for i in l])

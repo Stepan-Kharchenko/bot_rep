@@ -16,6 +16,10 @@ class Reg(BaseStateGroup):
 
 kb = Keyboard(one_time=True)
 for i in [9,10,11]:kb=kb.add(Text(str(i)),color=colors[0])
+kb = kb.row()
+for i in [1,2,3,4]:kb=kb.add(Text(str(i)),color=colors[0])
+kb.row()
+for i in [5,6]:kb=kb.add(Text(str(i)),color=colors[0])
 kb_class = kb.row().add(Text("Назад"),color=colors[1])
 yes_or_no = (
     Keyboard(inline=True)
@@ -34,7 +38,7 @@ def initialise(bot):
                                           state=Reg.CLASS,
                                           first_name=l[0],
                                           last_name=l[1])
-            await message.answer("Хорошо, укажите класс",
+            await message.answer("Хорошо, укажите класс/курс",
                                  keyboard=kb_class)
         elif l[0] == "Отмена":
             await bot.state_dispenser.delete(message.peer_id)
@@ -65,13 +69,13 @@ def initialise(bot):
             await bot.state_dispenser.set(message.peer_id,
                                           state=Reg.CLASS,
                                           **d)
-            await message.answer("Хорошо, укажите класс",
+            await message.answer("Хорошо, укажите класс/курс",
                                  keyboard=kb_class)
         elif message.text in ("Да","Нет"):
             await bot.state_dispenser.set(message.peer_id,
                                           state=Reg.MATH,
-                                          **d,physic=(message.text=="Да")
-                                          )
+                                          **d,
+                                          physic=(message.text=="Да"))
             await message.answer("Хорошо, а математикой?",
                                  keyboard=yes_or_no)
         else:await message.answer("Пожалуйста, пользуйтесь кнопками")
@@ -95,9 +99,6 @@ def initialise(bot):
                      d["last_name"],
                      d["uclass"],
                      d["physic"],
-                     message.text=="Да"
-                     ]
-                    ]
-                   )
+                     message.text=="Да"]])
             return "Сохранено"
         else:await message.answer("Пожалуйста, пользуйтесь кнопками")
