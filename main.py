@@ -94,4 +94,5 @@ async def random(message: Message):
 
 if __name__ == "__main__":
     print("run")
+    delete("study",2)
     bot.run_forever()
