@@ -1,7 +1,6 @@
 import sqlite3
 path = "database/learning.db"
 
-
 def insert(table:str, columns:tuple, values:list):
     "вставляет в столбцы columns таблицы table все значения из двумерного массива values"
     with sqlite3.connect(path) as conn:
