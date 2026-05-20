@@ -75,4 +75,24 @@ one_or_more = (
     .add(Text("Отмена"),color=colors[3])
     )
 
+physic_themes = (
+    Keyboard(one_time=True)
+    .add(Text("Механика"),color=colors[0])
+    .add(Text("МКТ и Термодинамика"),color=colors[0])
+    .row()
+    .add(Text("Электромагнетизм"),color=colors[0])
+    .add(Text("Квантовая физика"),color=colors[0])
+    .row()
+    .add(Text("Отмена"),color=colors[3])
+)
+
+math_themes = (
+    Keyboard(one_time=True)
+    .add(Text("Алгебра"),color=colors[0])
+    .add(Text("Геометрия"),color=colors[0])
+    .add(Text("Вероятность и статистика"),color=colors[0])
+    .row()
+    .add(Text("Отмена"),color=colors[3])
+)
+
 yes = Keyboard(inline=True).add(Text("Да"),color=colors[2]).add(Text("Нет"),color=colors[3])

@@ -53,7 +53,9 @@ def adm_initialise(bot: Bot):
                                           state=add.AddEx.NUMBER,
                                           stud=message.text
                                           )
-            await message.answer("Введите номер задания",keyboard=kb.cancel)
+            await message.answer("Введите номер задания",
+                                 keyboard=(kb.physic_themes if message.text == "Физика" \
+                                    else kb.math_themes))
         else:await message.answer("Пожалуйста, пользуйтесь кнопками")
 
     @bot.on.message(state=Admin.STAT)
