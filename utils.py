@@ -37,3 +37,7 @@ def exersize_stat(eid:int)->int:
         except TypeError: ball = 0
         return int(ball)
     
+def validate_theme(d:dict, message:Message)->bool:
+    return (d["stud"] == "Математика" and message.text in ("Алгебра","Геометрия","Вероятность и Статистика"))\
+        or (d["stud"] == "Физика" and message.text in ("Механика","МКТ и Термоденамика","Электромагнетизм","Квантовая"))
+    

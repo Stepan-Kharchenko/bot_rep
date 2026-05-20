@@ -54,8 +54,7 @@ def adm_initialise(bot: Bot):
                                           stud=message.text
                                           )
             await message.answer("Введите номер задания",
-                                 keyboard=(kb.physic_themes if message.text == "Физика" \
-                                    else kb.math_themes))
+                                 keyboard=(kb.physic_themes if message.text == "Физика" else kb.math_themes))
         else:await message.answer("Пожалуйста, пользуйтесь кнопками")
 
     @bot.on.message(state=Admin.STAT)
@@ -73,7 +72,7 @@ def adm_initialise(bot: Bot):
                                           state=stat.Stat.EXERSIZE
                                           )
             await message.answer("Напишите индекс задания в формате <M, если математика, P, если физика>\
-<номер задания (от 01 до 19/26)><индекс задания (если есть, иначе ничего)>",keyboard=kb.cancel)
+<первые две буквы темы задания><индекс задания (если есть, иначе ничего)>",keyboard=kb.cancel)
         else:return "Пожалуйста, пользуйтесь кнопками"
 
     @bot.on.message(state=Admin.USERS)

@@ -3,6 +3,7 @@ from vkbottle.bot import Message
 
 from database.create_table import *
 import keyboards as kb
+import utils as ut
 
 class AddEx(BaseStateGroup):
     NUMBER = 0
@@ -16,26 +17,12 @@ def add_initialise(bot: Bot):
         else:
             state_data = await bot.state_dispenser.get(message.peer_id)
             d = state_data.payload
-            try:
-                return
-                #n = int(message.text.strip())
-                #if d["stud"] == "Математика" and 1<=n<=19\
-                #   or d["stud"] == "Физика" and 1<=n<=26:
-                #    l = select("study",
-                #               f"math = {d['stud']=='Математика'} AND number = {int(message.text)}"
-                #               )
-                #    ind = 0 if l == [] else l[-1][3]+1
-                #    await bot.state_dispenser.set(message.peer_id,
-                #                                  state=AddEx.TEXT,
-                #                                  **d,
-                #                                  number=n,
-                #                                  index = ind
-                #                                  )
-                #    await message.answer("Введите текст задания",
-                #                         keyboard=kb.cancel
-                #                         )
-                #else:raise ValueError("Не тот формат")
-            except ValueError as e:await message.answer(e,keyboard=kb.cancel)
+            if ut.validate_theme(d,message):
+                await bot.state_dispenser.set(message.peer_id,
+                                              state=AddEx.TEXT,
+                                              theme=message.text)
+                await message.answer("Пожалуйста, введите текст задания", keyboard=kb.cancel)
+            else: await message.answer("Пожалуйста, пользуйтесь кнопками")
 
     @bot.on.message(state=AddEx.TEXT)
     async def addexind(message: Message):
