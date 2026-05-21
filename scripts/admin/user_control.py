@@ -8,7 +8,7 @@ admin_ids = list(map(int,os.getenv("admin").split()))
 
 from database.create_table import *
 import keyboards as kb
-from utils import validate
+from utils import *
 
 path = "secret.env"
 
@@ -29,10 +29,8 @@ def control_initialise(bot: Bot):
             uid = int(message.text.strip())
             state_data = await bot.state_dispenser.get(message.peer_id)
             d = state_data.payload
-            ##print(select("users","1 = 1",("id",)))
             if (uid,) in select("users","1 = 1",("id",)):
                 if d["action"] == "Изменить права":
-                    print("gut")
                     await bot.state_dispenser.set(message.peer_id,
                                                   Control.RIGHTS,
                                                   uid=uid)
@@ -84,28 +82,29 @@ def control_initialise(bot: Bot):
     async def test1(message: Message):
         state_data = await bot.state_dispenser.get(message.peer_id)
         uid = state_data.payload["uid"]
+        await message.answer("Введите количество заданий по темам:",keyboard=kb.physic_add_exersizes)
+        #while not flag_for_test: pass
         await bot.state_dispenser.set(message.peer_id,
                                       Control.TEST2,
                                       uid=uid,
                                       study=message.text)
-        await message.answer("Введите через пробел номера заданий для теста, или 0, если нужен вариант целиком")
     
     @bot.on.message(state=Control.TEST2)
     async def test2(message: Message):
         state_data = await bot.state_dispenser.get(message.peer_id)
         d = state_data.payload
-        l = tuple(map(int,message.text.split())) if message.text.strip() != "0" else \
-            (i for i in range(1,(20 if message.text == 'math' else 27)))
-        exl = []
-        print(l)
-        for i in l:
-            variants = select("study",f"math = {d['study'] == 'Математика'} AND number = {i}")
-            print(variants)
-            exl.append(r.choice(variants))
-        try: variant = max(i[4] for i in select("results",f"id = {d['uid']}"))+1
-        except ValueError:
-            variant = 1
-        insert("results",
-               ("user_id","exersize_id","var","ball"),
-               [(d["uid"],i[0],variant,-1) for i in exl]
-               )
+        d["dct"] = became_dict()
+        print(d)
+        #l = tuple(map(int,message.text.split())) if message.text.strip() != "0" else \
+        #    (i for i in range(1,(20 if message.text == 'math' else 27)))
+        #exl = []
+        #print(l)
+        #for i in l:
+        #    variants = select("study",f"math = {d['study'] == 'Математика'} AND number = {i}")
+        #    exl.append(r.choice(variants))
+        #try: variant = max(i[4] for i in select("results",f"id = {d['uid']}"))+1
+        #except ValueError:
+        #    variant = 1
+        #insert("results",
+        #       ("user_id","exersize_id","var","ball"),
+        #       [(d["uid"],i[0],variant,-1) for i in exl])

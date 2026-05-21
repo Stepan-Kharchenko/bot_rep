@@ -1,6 +1,10 @@
 from vkbottle import Keyboard,Callback,Text
 from vkbottle import KeyboardButtonColor
 
+physic_themes_list = (("Механика","ME"),("МКТ и Тд","MK"),
+                      ("Электромагнетизм","EL"),("Квантовая","KV"))
+math_themes_list = (("Алгебра","AL"),("Геометрия","GE"),("Вероятность и статистика","VE"))
+
 colors = [KeyboardButtonColor.PRIMARY,
           KeyboardButtonColor.SECONDARY,
           KeyboardButtonColor.POSITIVE,
@@ -96,3 +100,16 @@ math_themes = (
 )
 
 yes = Keyboard(inline=True).add(Text("Да"),color=colors[2]).add(Text("Нет"),color=colors[3])
+
+physic_add_exersizes = Keyboard()
+math_add_exersizes = Keyboard()
+for th,ab in physic_themes_list:
+    physic_add_exersizes = physic_add_exersizes.add(Callback("-",payload={ab:False}),color=colors[3])
+    physic_add_exersizes = physic_add_exersizes.add(Callback(th,payload={ab:None}))
+    physic_add_exersizes = physic_add_exersizes.add(Callback("+",payload={ab:True}),color=colors[2]).row()
+for th,ab in math_themes_list:
+    math_add_exersizes = math_add_exersizes.add(Callback("-",payload={ab:False}),color=colors[3])
+    math_add_exersizes = math_add_exersizes.add(Callback(th,payload={ab:None}))
+    math_add_exersizes = math_add_exersizes.add(Callback("+",payload={ab:True}),color=colors[2]).row()
+physic_add_exersizes = physic_add_exersizes.add(Callback("Конец",payload={ab:None}),color=colors[0])
+math_add_exersizes = math_add_exersizes.add(Callback("Конец",payload={ab:None}),color=colors[0])

@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 import os
 load_dotenv("secret.env")
 admin_ids = list(map(int,os.getenv("admin").split()))
+
 import datetime as dt
+from collections import defaultdict
 
 def validate(message: Message)->bool:
     return message.peer_id in admin_ids
@@ -40,4 +42,17 @@ def exersize_stat(eid:int)->int:
 def validate_theme(d:dict, message:Message)->bool:
     return (d["stud"] == "Математика" and message.text in ("Алгебра","Геометрия","Вероятность и Статистика"))\
         or (d["stud"] == "Физика" and message.text in ("Механика","МКТ и Термоденамика","Электромагнетизм","Квантовая"))
+    
+def add_exersizes_in_test(theme:str, add:bool, d:defaultdict)->dict:
+    d[theme] += (1 if add else (-1 if d[theme]>0 else 0))
+    return d
+
+flag_for_test,ut_dct = False,{}
+def end_of_test(d:defaultdict):
+    global flag_for_test,ut_dct
+    flag_for_test = True
+    ut_dct = d
+    
+def became_dict():
+    return dict(ut_dct)
     

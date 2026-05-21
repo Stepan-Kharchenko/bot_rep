@@ -1,4 +1,4 @@
-from vkbottle import Bot,GroupEventType,Keyboard
+from vkbottle import Bot,GroupEventType,Keyboard,Text
 from vkbottle.bot import Message,MessageEvent
 
 import keyboards as kb
@@ -13,6 +13,7 @@ TOKEN = os.getenv("VK_TOKEN")
 admin_ids = list(map(int,os.getenv("admin").split()))
 bot = Bot(token=TOKEN)
 
+dct = ut.defaultdict(int)
 
 @bot.on.message(text=["/start","Начать"])
 async def start(message: Message):
@@ -83,6 +84,17 @@ async def callback(event: MessageEvent):
                                      keyboard=kb.helpk
                                      )
         await event.show_snackbar("До свидания")
+    if tuple(event.payload.keys())[0] in (i[1] for i in kb.physic_themes_list+kb.math_themes_list):
+        global dct
+        if tuple(event.payload.values())[0] == None:
+            ut.end_of_test(dct)
+            await event.send_message(str(dct),
+                                     keyboard=Keyboard(one_time=True).add(Text("Закончить")))
+            await event.show_snackbar("Сохранено")
+            dct = ut.defaultdict(int)
+        else:
+            dct = ut.add_exersizes_in_test(tuple(event.payload.keys())[0],tuple(event.payload.values())[0],dct)
+            await event.show_snackbar("Добавлено" if tuple(event.payload.values())[0] else "Убрано")
 
 @bot.on.message()
 async def random(message: Message):
@@ -94,5 +106,4 @@ async def random(message: Message):
 
 if __name__ == "__main__":
     print("run")
-    delete("study",2)
     bot.run_forever()
