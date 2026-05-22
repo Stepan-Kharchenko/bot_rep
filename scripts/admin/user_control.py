@@ -82,7 +82,9 @@ def control_initialise(bot: Bot):
     async def test1(message: Message):
         state_data = await bot.state_dispenser.get(message.peer_id)
         uid = state_data.payload["uid"]
-        await message.answer("Введите количество заданий по темам:",keyboard=kb.physic_add_exersizes)
+        await message.answer("Введите количество заданий по темам:",
+                             keyboard=(kb.math_add_exersizes if message.text == "Математика"\
+                                        else kb.physic_add_exersizes))
         #while not flag_for_test: pass
         await bot.state_dispenser.set(message.peer_id,
                                       Control.TEST2,
@@ -92,19 +94,25 @@ def control_initialise(bot: Bot):
     @bot.on.message(state=Control.TEST2)
     async def test2(message: Message):
         state_data = await bot.state_dispenser.get(message.peer_id)
+        await bot.state_dispenser.delete(message.peer_id)
         d = state_data.payload
         d["dct"] = became_dict()
-        print(d)
-        #l = tuple(map(int,message.text.split())) if message.text.strip() != "0" else \
-        #    (i for i in range(1,(20 if message.text == 'math' else 27)))
-        #exl = []
-        #print(l)
-        #for i in l:
-        #    variants = select("study",f"math = {d['study'] == 'Математика'} AND number = {i}")
-        #    exl.append(r.choice(variants))
-        #try: variant = max(i[4] for i in select("results",f"id = {d['uid']}"))+1
-        #except ValueError:
-        #    variant = 1
-        #insert("results",
-        #       ("user_id","exersize_id","var","ball"),
-        #       [(d["uid"],i[0],variant,-1) for i in exl])
+        math = any(i == j for i in d["dct"] for j in ("AL","GE","VE"))
+        stud_themes_list = kb.math_themes_list if math else kb.physic_themes_list
+        #dict_of_themes: {тема(полностью):кортеж id-шек}
+        dict_of_themes = {i[0]:list(j[0] for j in select("study",f'theme = "{i[0]}"',("id",))) for i in stud_themes_list}
+        #dict_of_themes_names: {тема(аббревиатура):тема(полностью)}
+        dict_of_themes_names = {i[1]:i[0] for i in stud_themes_list}
+        exemples = []
+        var = max_value("results","var",f"user_id = {d['uid']}")
+        try:
+            for i in d["dct"]:#темы (сокращённо)
+                for j in range(d["dct"][i]):#нужное кол-во тем
+                    ind = r.randint(0,len(dict_of_themes[dict_of_themes_names[i]])-1)
+                    exemples.append(dict_of_themes[dict_of_themes_names[i]][ind])
+                    del dict_of_themes[dict_of_themes_names[i]][ind]
+            insert("results",("user_id","exersize_id","var","ball"),
+                   [(d["uid"],i,var+1,-1) for i in exemples])
+            return "Вариант составлен"
+        except IndexError: return "Не хватает заданий в базе данных"
+

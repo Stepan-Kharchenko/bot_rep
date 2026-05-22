@@ -54,3 +54,10 @@ def update(table:str, condition, new_value, column):
         cond = f"id = {condition}" if type(condition) == int else condition
         cursor.execute(f"UPDATE {table} SET {column} = {new_value} WHERE {cond}")
         conn.commit()
+
+def max_value(table:str, column:str, condition:str = "1 = 1"):
+    with sqlite3.connect(path) as conn:
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT MAX({column}) FROM {table} WHERE {condition}")
+        value = cursor.fetchone()[0]
+        return value if value!=None else 0

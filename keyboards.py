@@ -28,7 +28,7 @@ not_reg = (
     )
 
 cancel = (
-    Keyboard(one_time=False)
+    Keyboard(one_time=True)
     .add(Text("Отмена"),color=colors[3])
     )
 

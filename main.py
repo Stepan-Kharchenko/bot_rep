@@ -51,7 +51,6 @@ async def stat(message: Message):
 
 @bot.on.message(command="admin")
 async def admin(message: Message):
-    print("admin")
     if ut.validate(message):
         await bot.state_dispenser.set(message.peer_id,
                                       state=scripts.admin.Admin.START)
@@ -88,8 +87,7 @@ async def callback(event: MessageEvent):
         global dct
         if tuple(event.payload.values())[0] == None:
             ut.end_of_test(dct)
-            await event.send_message(str(dct),
-                                     keyboard=Keyboard(one_time=True).add(Text("Закончить")))
+            await event.send_message("Завершите добавление",keyboard=Keyboard(one_time=True).add(Text("Закончить")))
             await event.show_snackbar("Сохранено")
             dct = ut.defaultdict(int)
         else:
