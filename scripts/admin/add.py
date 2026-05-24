@@ -58,7 +58,7 @@ def add_initialise(bot: Bot):
         try:
             class_ = int(message.text)
             if not ((class_ in range(9,12)) or (class_ in range(1,6))): raise ValueError
-            math = d["theme"] in ("Алгебра","Геометрия","Вероятность и Статистика")
+            math = d["theme"] in ("Алгебра",kb.ver)
             l = select("study", f"theme = '{d['theme']}'", ("ind",))
             index = l[-1][0] if l else 0
             insert("study",

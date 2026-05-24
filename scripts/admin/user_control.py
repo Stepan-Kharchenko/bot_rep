@@ -14,11 +14,11 @@ from utils import *
 path = "secret.env"
 
 class Control(BaseStateGroup):
-    ID = 100
-    RIGHTS = 101
-    DEL = 102
-    TEST = 103
-    TEST2 = 104
+    ID = 0
+    RIGHTS = 1
+    DEL = 2
+    TEST = 3
+    TEST2 = 4
 
 def control_initialise(bot: Bot):
     @bot.on.message(state=Control.ID)
@@ -84,9 +84,7 @@ def control_initialise(bot: Bot):
         state_data = await bot.state_dispenser.get(message.peer_id)
         uid = state_data.payload["uid"]
         await message.answer("Введите количество заданий по темам:",
-                             keyboard=(kb.math_add_exersizes if message.text == "Математика"\
-                                        else kb.physic_add_exersizes))
-        #while not flag_for_test: pass
+                             keyboard=(kb.math_add_exersizes if message.text == "Математика" else kb.physic_add_exersizes))
         await bot.state_dispenser.set(message.peer_id,
                                       Control.TEST2,
                                       uid=uid,
@@ -97,23 +95,5 @@ def control_initialise(bot: Bot):
         state_data = await bot.state_dispenser.get(message.peer_id)
         await bot.state_dispenser.delete(message.peer_id)
         d = state_data.payload
-        d["dct"] = became_dict()
-        math = any(i == j for i in d["dct"] for j in ("AL","GE","VE"))
-        var,uclass = max_value("results","var",f"user_id = {d['uid']}"),any_select("users",d["uid"])[3]
-        stud_themes_list = kb.math_themes_list if math else kb.physic_themes_list   #dict_of_themes: {тема(полностью):кортеж id-шек}
-        dict_of_themes = {i[0]:list(j[0] for j in select("study",
-                                                         f'theme = "{i[0]}" AND class = {uclass}',
-                                                         ("id",))) for i in stud_themes_list}
-        dict_of_themes_names = {i[1]:i[0] for i in stud_themes_list}   #dict_of_themes_names: {тема(аббревиатура):тема(полностью)}
-        exemples = []
-        try:
-            for i in d["dct"]:#темы (сокращённо)
-                for j in range(d["dct"][i]):#нужное кол-во тем
-                    ind = r.randint(0,len(dict_of_themes[dict_of_themes_names[i]])-1)
-                    exemples.append(dict_of_themes[dict_of_themes_names[i]][ind])
-                    del dict_of_themes[dict_of_themes_names[i]][ind]
-            insert("results",("user_id","exersize_id","var","ball"),
-                   [(d["uid"],i,var+1,-1) for i in exemples])
-            return "Вариант составлен"
-        except IndexError: return "Не хватает заданий в базе данных"
+        await add_test(message,bot,d)
 

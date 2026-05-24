@@ -1,9 +1,10 @@
 from vkbottle import Keyboard,Callback,Text
 from vkbottle import KeyboardButtonColor
 
+ver = "Вероятность и Статистика"
 physic_themes_list = (("Механика","ME"),("МКТ и Тд","MK"),
                       ("Электромагнетизм","EL"),("Квантовая","KV"))
-math_themes_list = (("Алгебра","AL"),("Геометрия","GE"),("Вероятность и статистика","VE"))
+math_themes_list = (("Алгебра","AL"),("Геометрия","GE"),(ver,"VE"))
 
 colors = [KeyboardButtonColor.PRIMARY,
           KeyboardButtonColor.SECONDARY,

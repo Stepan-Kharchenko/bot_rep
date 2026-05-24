@@ -3,6 +3,7 @@ from vkbottle.bot import Message
 
 from database.create_table import *
 import keyboards as kb
+import utils as ut
 
 
 class Test(BaseStateGroup):
@@ -15,19 +16,24 @@ class Test(BaseStateGroup):
 def initialise(bot: Bot):
     @bot.on.message(state=Test.INITTEST)
     async def init(message: Message):
-        if message.text == "Отмена":
-            await bot.state_dispenser.delete(message.peer_id)
+        if message.text == "Отмена": await bot.state_dispenser.delete(message.peer_id)
         elif message.text in ("Физика","Математика"):
-            l = [i for i in select("results",f"ball = -1 AND user_id = {message.peer_id}",("id","exersize_id"))]
-            if l:
-                test_ids, ex_ids = [i[0] for i in l], [i[1] for i in l]
+            async def foo(message:Message, bot:Bot):
                 await bot.state_dispenser.set(message.peer_id,
                                               Test.TEST,
                                               tid=test_ids,
                                               eid=ex_ids)
-                await message.answer("Для вас есть составленный тест, приступить к выполнению?",
-                                     keyboard=kb.yes)
-            else: await message.answer("Для вас нет теста, подборка пока в разработке")
+                await message.answer(mess, keyboard=kb.yes)
+            def get_l(): return [i for i in select("results",f"ball = -1 AND user_id = {message.peer_id}",("id","exersize_id"))]
+            l = get_l()
+            if not l:
+                await ut.add_test(message,bot,{"uid":message.peer_id,
+                                               "study":message.text})
+                mess = "Для вас нет теста, сейчас он сгенерируется, приступить к выполнению?"
+            else: mess = "Для вас есть составленный тест, приступить к выполнению?"
+            l = get_l()
+            test_ids, ex_ids = [i[0] for i in l], [i[1] for i in l]
+            await foo(message,bot)
         else: await message.answer("Пожалуйста, пользуйтесь кнопками")
     
     @bot.on.message(state=Test.TEST)
@@ -46,8 +52,7 @@ def initialise(bot: Bot):
 
     @bot.on.message(state=Test.TEST1)
     async def test1(message: Message):
-        if message.text == "Отмена":
-            await bot.state_dispenser.delete(message.peer_id)
+        if message.text == "Отмена": await bot.state_dispenser.delete(message.peer_id)
         else:
             d = (await bot.state_dispenser.get(message.peer_id)).payload
             if "answers" not in d:

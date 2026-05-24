@@ -42,7 +42,7 @@ def adm_initialise(bot: Bot):
                 .add(Text("Отмена"),color=colors[3])
                 )
                                  )
-        else:await message.answer("Пожалуйста, пользуйтесь кнопками")
+        else: await message.answer("Пожалуйста, пользуйтесь кнопками")
 
     @bot.on.message(state=Admin.ADDEX)
     async def addex(message: Message):
@@ -55,7 +55,7 @@ def adm_initialise(bot: Bot):
                                           )
             await message.answer("Выберите тему задания",
                                  keyboard=(kb.physic_themes if message.text == "Физика" else kb.math_themes))
-        else:await message.answer("Пожалуйста, пользуйтесь кнопками")
+        else: await message.answer("Пожалуйста, пользуйтесь кнопками")
 
     @bot.on.message(state=Admin.STAT)
     async def statistic(message: Message):
