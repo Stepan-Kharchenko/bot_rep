@@ -41,7 +41,7 @@ def initialise(bot: Bot):
                                           state=Test.TEST1,
                                           **d,
                                           counter=0)
-            await message.answer(any_select("study",d["eid"][0])[5],keyboard=kb.cancel)
+            await message.answer(any_select("study",d["eid"][0])[4],keyboard=kb.cancel)
         else: await message.answer("Пожалуйста, пользуйтесь кнопками")
 
     @bot.on.message(state=Test.TEST1)
@@ -57,7 +57,7 @@ def initialise(bot: Bot):
                                               tid=d["tid"],
                                               counter=1,
                                               answers=[message.text])
-                await message.answer(any_select("study",d["eid"][1])[5],keyboard=kb.cancel)
+                await message.answer(any_select("study",d["eid"][1])[4],keyboard=kb.cancel)
             else:
                 counter=d["counter"]+1
                 answers = d["answers"]+[message.text]
@@ -75,7 +75,7 @@ def initialise(bot: Bot):
                                                 tid=d["tid"],
                                                 counter=counter,
                                                 answers=answers)
-                    await message.answer(any_select("study",d["eid"][counter])[5],keyboard=kb.cancel)
+                    await message.answer(any_select("study",d["eid"][counter])[4],keyboard=kb.cancel)
 
     @bot.on.message(state=Test.TEST2)
     async def test2(message: Message):
@@ -100,7 +100,7 @@ def initialise(bot: Bot):
                                             tid=d["tid"],
                                             counter=counter,
                                             answers=answers)
-                await message.answer(any_select("study",d["eid"][counter])[5],keyboard=kb.cancel)
+                await message.answer(any_select("study",d["eid"][counter])[4],keyboard=kb.cancel)
 
     @bot.on.message(state=Test.END)
     async def end(message: Message):
@@ -110,7 +110,7 @@ def initialise(bot: Bot):
         print(d["eid"])
         print(d["tid"])
         if message.text == "Да":
-            true_answers = [any_select("study",i)[4] for i in d["eid"]]
+            true_answers = [any_select("study",i)[5] for i in d["eid"]]
             for i in range(len(d["eid"])):
                 t,a,ta = d["tid"][i],answers[i],true_answers[i]
                 update("results", t, int(a==ta), "ball")

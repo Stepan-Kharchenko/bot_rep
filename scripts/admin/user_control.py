@@ -1,5 +1,6 @@
 from vkbottle import Bot,BaseStateGroup
 from vkbottle.bot import Message
+
 import random as r
 from dotenv import set_key,load_dotenv
 import os
@@ -98,13 +99,13 @@ def control_initialise(bot: Bot):
         d = state_data.payload
         d["dct"] = became_dict()
         math = any(i == j for i in d["dct"] for j in ("AL","GE","VE"))
-        stud_themes_list = kb.math_themes_list if math else kb.physic_themes_list
-        #dict_of_themes: {тема(полностью):кортеж id-шек}
-        dict_of_themes = {i[0]:list(j[0] for j in select("study",f'theme = "{i[0]}"',("id",))) for i in stud_themes_list}
-        #dict_of_themes_names: {тема(аббревиатура):тема(полностью)}
-        dict_of_themes_names = {i[1]:i[0] for i in stud_themes_list}
+        var,uclass = max_value("results","var",f"user_id = {d['uid']}"),any_select("users",d["uid"])[3]
+        stud_themes_list = kb.math_themes_list if math else kb.physic_themes_list   #dict_of_themes: {тема(полностью):кортеж id-шек}
+        dict_of_themes = {i[0]:list(j[0] for j in select("study",
+                                                         f'theme = "{i[0]}" AND class = {uclass}',
+                                                         ("id",))) for i in stud_themes_list}
+        dict_of_themes_names = {i[1]:i[0] for i in stud_themes_list}   #dict_of_themes_names: {тема(аббревиатура):тема(полностью)}
         exemples = []
-        var = max_value("results","var",f"user_id = {d['uid']}")
         try:
             for i in d["dct"]:#темы (сокращённо)
                 for j in range(d["dct"][i]):#нужное кол-во тем

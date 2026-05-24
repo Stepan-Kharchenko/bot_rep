@@ -5,6 +5,7 @@ import keyboards as kb
 from database.create_table import *
 import scripts
 import utils as ut
+import images.img as img
 
 from dotenv import load_dotenv
 import os
@@ -27,6 +28,7 @@ async def start(message: Message):
 Вас зовут {l[1]} {l[2]}, вы в {l[3]} классе, занимаетесь {l[4]*'физикой'} {l[5]*'и математикой'}.
 Что хотите?
 """,keyboard=kb.in_reg)
+    #await message.answer(attachment = await img.send_photo("Котик",bot)) - картинка
 
 @bot.on.message(text=["Отмена","/help"])
 async def cancel(message: Message):
