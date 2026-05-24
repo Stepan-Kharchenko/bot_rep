@@ -26,8 +26,7 @@ async def start(message: Message):
         l = string[0]
         await message.answer(f"""Вы зарегестрированы, ваши данные:
 Вас зовут {l[1]} {l[2]}, вы в {l[3]} классе, занимаетесь {l[4]*'физикой'} {l[5]*'и математикой'}.
-Что хотите?
-""",keyboard=kb.in_reg)
+Что хотите?""",keyboard=kb.in_reg)
     #await message.answer(attachment = await img.send_photo("Котик",bot)) - картинка
 
 @bot.on.message(text=["Отмена","/help"])

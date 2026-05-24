@@ -1,11 +1,6 @@
 import sqlite3
 path = "database/learning.db"
 
-with sqlite3.connect(path) as conn:
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM results WHERE 1 = 1")
-    conn.commit()
-
 def insert(table:str, columns:tuple, values:list):
     "вставляет в столбцы columns таблицы table все значения из двумерного массива values"
     with sqlite3.connect(path) as conn:

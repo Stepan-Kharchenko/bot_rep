@@ -37,14 +37,12 @@ def stat_initialise(bot: Bot):
         await bot.state_dispenser.delete(message.peer_id)
         if message.text == "Отмена": return "До свидания"
         else:
-            if True:
-                s = message.text
-                l = select("study",f"math = {s[0]=='M'} AND number = {s[1]+s[2]} \
-{f'AND index = {s[3:]}' if len(s)>3 else ''}")
-                s = ""
+            try:
+                l,s = select("study",f"id = {int(message.text)}"),""
                 for i in l:
-                    s += f'Задание {i[0]}. "{i[5]}", Ответ - {i[4]}. Средний балл выполнения - {exersize_stat(i[0])}%\n'
+                    s += f'Задание {i[0]}. "{i[4]}", Ответ - {i[5]}. Средний балл выполнения - {exersize_stat(i[0])}%\n'
                 return s 
+            except ValueError: return "Вводите только число - id задания"
 
     @bot.on.message(state=Stat.ONE_STUDENT)
     async def stat_one_user(message: Message):
@@ -52,10 +50,9 @@ def stat_initialise(bot: Bot):
         try:
             uid = int(message.text)
             if (uid,) in select("users","1 = 1",("id",)):
-                await message.answer(f"У ученика {int(user_stat(uid))}% выполненных заданий")
+                await message.answer(f"У ученика {int(user_stat(uid)[0])}% выполненных заданий. Учится {user_stat(uid)[1]}")
             else: raise ValueError
-        except ValueError:
-            await message.answer("Неправильно введен id или его нет в списках")
+        except ValueError: await message.answer("Неправильно введен id или его нет в списках")
     
 
             

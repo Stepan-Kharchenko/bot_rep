@@ -7,6 +7,7 @@ from .add import *
 from .stat import *
 from .user_control import *
 from utils import *
+from database.create_table import select
 
 class Admin(BaseStateGroup):
     START = 0
@@ -71,8 +72,15 @@ def adm_initialise(bot: Bot):
             await bot.state_dispenser.set(message.peer_id,
                                           state=stat.Stat.EXERSIZE
                                           )
-            await message.answer("Напишите индекс задания в формате <M, если математика, P, если физика>\
-<первые две буквы темы задания><индекс задания (если есть, иначе ничего)>",keyboard=kb.cancel)
+            await message.answer("""Данные указаны в формате (id задания, задание, ответ, класс).
+Укажите id задания.
+Ваши задания по математике:\n"""+"\n".join(str(i) for i in select("study",
+                                                                  'math = 1',
+                                                                  ("id","exersize","answer","class")))+\
+"\nВаши задания по физике:\n"+"\n".join(str(i) for i in select("study",
+                                        'math = 0',
+                                        ("id","exersize","answer","class"))),
+                                 keyboard=kb.cancel)
         else:return "Пожалуйста, пользуйтесь кнопками"
 
     @bot.on.message(state=Admin.USERS)
