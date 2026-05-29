@@ -31,24 +31,25 @@ def control_initialise(bot: Bot):
             state_data = await bot.state_dispenser.get(message.peer_id)
             d = state_data.payload
             if (uid,) in select("users","1 = 1",("id",)):
-                if d["action"] == "Изменить права":
-                    await bot.state_dispenser.set(message.peer_id,
-                                                  Control.RIGHTS,
-                                                  uid=uid)
-                    await message.answer(f"{'Забрать' if uid in admin_ids else 'Дать'} права админа",
-                                        keyboard=kb.yes)
-                elif d["action"] == "Удалить ученика":
-                    await bot.state_dispenser.set(message.peer_id,
-                                                  state=Control.DEL,
-                                                  uid=uid)
-                    await message.answer("Вы действительно хотите удалить ученика?",
-                                         keyboard=kb.yes)
-                elif d["action"] == "Составить тест":
-                    await bot.state_dispenser.set(message.peer_id,
-                                                  state=Control.TEST,
-                                                  uid=uid)
-                    await message.answer("По физике или по математике?",
-                                         keyboard=kb.phys_or_math)
+                match d["action"]:
+                    case "Изменить права":
+                        await bot.state_dispenser.set(message.peer_id,
+                                                    Control.RIGHTS,
+                                                    uid=uid)
+                        await message.answer(f"{'Забрать' if uid in admin_ids else 'Дать'} права админа",
+                                            keyboard=kb.yes)
+                    case "Удалить ученика":
+                        await bot.state_dispenser.set(message.peer_id,
+                                                    state=Control.DEL,
+                                                    uid=uid)
+                        await message.answer("Вы действительно хотите удалить ученика?",
+                                            keyboard=kb.yes)
+                    case "Составить тест":
+                        await bot.state_dispenser.set(message.peer_id,
+                                                    state=Control.TEST,
+                                                    uid=uid)
+                        await message.answer("По физике или по математике?",
+                                            keyboard=kb.phys_or_math)
             else: raise ValueError("no id in table")
         except ValueError as e: await message.answer("Нет такого ID или он введен неверно")
 
@@ -59,8 +60,8 @@ def control_initialise(bot: Bot):
         await bot.state_dispenser.delete(message.peer_id)
         if message.text == "Да":
             if uid == message.peer_id: return "Вы не можете лишить себя прав админа"
-            if uid in admin_ids:s = " ".join(map(str,admin_ids)).replace(str(uid),"").replace("  "," ")
-            else:s = " ".join(map(str,admin_ids))+" "+str(uid)
+            if uid in admin_ids: s = " ".join(map(str,admin_ids)).replace(str(uid),"").replace("  "," ")
+            else: s = " ".join(map(str,admin_ids))+" "+str(uid)
         with open("secret.env") as f:
             olds = "\n".join(i for i in f)
         with open("secret.env", "w") as f:

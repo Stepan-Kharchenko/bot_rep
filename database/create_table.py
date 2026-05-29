@@ -25,10 +25,8 @@ def select(table:str, condition:str="1 = 1", columns=tuple())->list:
     "выбирает все записи с условием condition"
     with sqlite3.connect(path) as conn:
         cursor = conn.cursor()
-        if columns == tuple():
-            cursor.execute(f"SELECT * FROM {table} WHERE {condition}")
-        if columns != tuple():
-            cursor.execute(f"SELECT {','.join(columns)} FROM {table} WHERE {condition}")
+        if columns == tuple(): cursor.execute(f"SELECT * FROM {table} WHERE {condition}")
+        else: cursor.execute(f"SELECT {','.join(columns)} FROM {table} WHERE {condition}")
         l = cursor.fetchall()
     return l
 
@@ -44,8 +42,7 @@ def selbst(s:str):
     with sqlite3.connect(path) as conn:
         cursor = conn.cursor()
         cursor.execute(s)
-        if "SELECT" in s.upper():
-            return "\n".join([str(i) for i in cursor.fetchall()])
+        if "SELECT" in s.upper(): return "\n".join([str(i) for i in cursor.fetchall()])
         return "Готово"
 
 def update(table:str, condition, new_value, column):

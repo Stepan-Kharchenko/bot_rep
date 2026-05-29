@@ -16,39 +16,41 @@ class Test(BaseStateGroup):
 def initialise(bot: Bot):
     @bot.on.message(state=Test.INITTEST)
     async def init(message: Message):
-        if message.text == "Отмена": await bot.state_dispenser.delete(message.peer_id)
-        elif message.text in ("Физика","Математика"):
-            async def foo(message:Message, bot:Bot):
-                await bot.state_dispenser.set(message.peer_id,
-                                              Test.TEST,
-                                              tid=test_ids,
-                                              eid=ex_ids)
-                await message.answer(mess, keyboard=kb.yes)
-            def get_l(): return [i for i in select("results",f"ball = -1 AND user_id = {message.peer_id}",("id","exersize_id"))]
-            l = get_l()
-            if not l:
-                await ut.add_test(message,bot,{"uid":message.peer_id,
-                                               "study":message.text})
-                mess = "Для вас нет теста, сейчас он сгенерируется, приступить к выполнению?"
-            else: mess = "Для вас есть составленный тест, приступить к выполнению?"
-            l = get_l()
-            test_ids, ex_ids = [i[0] for i in l], [i[1] for i in l]
-            await foo(message,bot)
-        else: await message.answer("Пожалуйста, пользуйтесь кнопками")
+        match message.text:
+            case "Отмена": await bot.state_dispenser.delete(message.peer_id)
+            case "Физика" | "Математика":
+                async def foo(message:Message, bot:Bot):
+                    await bot.state_dispenser.set(message.peer_id,
+                                                Test.TEST,
+                                                tid=test_ids,
+                                                eid=ex_ids)
+                    await message.answer(mess, keyboard=kb.yes)
+                def get_l(): return [i for i in select("results",f"ball = -1 AND user_id = {message.peer_id}",("id","exersize_id"))]
+                l = get_l()
+                if not l:
+                    await ut.add_test(message,bot,{"uid":message.peer_id,
+                                                "study":message.text})
+                    mess = "Для вас нет теста, сейчас он сгенерируется, приступить к выполнению?"
+                else: mess = "Для вас есть составленный тест, приступить к выполнению?"
+                l = get_l()
+                test_ids, ex_ids = [i[0] for i in l], [i[1] for i in l]
+                await foo(message,bot)
+            case _: await message.answer("Пожалуйста, пользуйтесь кнопками")
     
     @bot.on.message(state=Test.TEST)
     async def test(message: Message):
-        if message.text == "Нет":
-            bot.state_dispenser.delete(message.peer_id)
-            return "До свидания"
-        elif message.text == "Да":
-            d = (await bot.state_dispenser.get(message.peer_id)).payload
-            await bot.state_dispenser.set(message.peer_id,
-                                          state=Test.TEST1,
-                                          **d,
-                                          counter=0)
-            await message.answer(any_select("study",d["eid"][0])[4],keyboard=kb.cancel)
-        else: await message.answer("Пожалуйста, пользуйтесь кнопками")
+        match message.text:
+            case "Нет":
+                bot.state_dispenser.delete(message.peer_id)
+                return "До свидания"
+            case "Да":
+                d = (await bot.state_dispenser.get(message.peer_id)).payload
+                await bot.state_dispenser.set(message.peer_id,
+                                            state=Test.TEST1,
+                                            **d,
+                                            counter=0)
+                await message.answer(any_select("study",d["eid"][0])[4],keyboard=kb.cancel)
+            case _: await message.answer("Пожалуйста, пользуйтесь кнопками")
 
     @bot.on.message(state=Test.TEST1)
     async def test1(message: Message):
@@ -114,18 +116,19 @@ def initialise(bot: Bot):
         answers = d["answers"]
         print(d["eid"])
         print(d["tid"])
-        if message.text == "Да":
-            true_answers = [any_select("study",i)[5] for i in d["eid"]]
-            for i in range(len(d["eid"])):
-                t,a,ta = d["tid"][i],answers[i],true_answers[i]
-                update("results", t, int(a==ta), "ball")
-            ball = sum(true_answers[i]==answers[i] for i in range(len(true_answers)))
-            await message.answer(f"У вас {ball} правильных ответов")
-        elif message.text == "Нет":
-            for i in d["tid"]:
-                update("results",i,-1)
-            return "До свидания"
-        else: return "Пожалуйста, пользуйтесь кнопками"
+        match message.text:
+            case"Да":
+                true_answers = [any_select("study",i)[5] for i in d["eid"]]
+                for i in range(len(d["eid"])):
+                    t,a,ta = d["tid"][i],answers[i],true_answers[i]
+                    update("results", t, int(a==ta), "ball")
+                ball = sum(true_answers[i]==answers[i] for i in range(len(true_answers)))
+                await message.answer(f"У вас {ball} правильных ответов")
+            case "Нет":
+                for i in d["tid"]:
+                    update("results",i,-1)
+                return "До свидания"
+            case _: return "Пожалуйста, пользуйтесь кнопками"
 
     
 

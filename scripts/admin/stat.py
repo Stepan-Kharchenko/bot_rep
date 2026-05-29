@@ -15,22 +15,23 @@ class Stat(BaseStateGroup):
 def stat_initialise(bot: Bot):
     @bot.on.message(state=Stat.USER)
     async def stat_user(message: Message):
-        if message.text == "Отмена": await bot.state_dispenser.delete(message.peer_id)
-        elif message.text == "Одного":
-            await bot.state_dispenser.set(message.peer_id, state=Stat.ONE_STUDENT)
-            return "Введите id ученика"
-        elif message.text == "Всех":
-            ids = [i for i in get_user_ids()]
-            balls = (user_stat(i)[0] for i in ids)
-            await message.answer(f"У вас {len(ids)} учеников, среди них средний балл - {sum(balls)/len(ids)}")
-            l = select("users","1 = 1")
-            s = "Ваши ученики:\n"
-            for i in l:
-                s += f"id - {i[0]}. {i[1]} {i[2]}, {i[3]} класс. \
-{"Физика и математика" if i[4] and i[5] else ("Физика" if i[4] else "Математика")}. \
-Учится {user_stat(i[0])[1]}\n"
-            await message.answer(s)
-        else:await message.answer("Пожалуйста, пользуйтесь кнопками")
+        match message.text:
+            case "Отмена": await bot.state_dispenser.delete(message.peer_id)
+            case "Одного":
+                await bot.state_dispenser.set(message.peer_id, state=Stat.ONE_STUDENT)
+                return "Введите id ученика"
+            case "Всех":
+                ids = [i for i in get_user_ids()]
+                balls = (user_stat(i)[0] for i in ids)
+                await message.answer(f"У вас {len(ids)} учеников, среди них средний балл - {sum(balls)/len(ids)}")
+                l = select("users","1 = 1")
+                s = "Ваши ученики:\n"
+                for i in l:
+                    s += f"id - {i[0]}. {i[1]} {i[2]}, {i[3]} класс. \
+    {"Физика и математика" if i[4] and i[5] else ("Физика" if i[4] else "Математика")}. \
+    Учится {user_stat(i[0])[1]}\n"
+                await message.answer(s)
+            case _:await message.answer("Пожалуйста, пользуйтесь кнопками")
         
     @bot.on.message(state=Stat.EXERSIZE)
     async def stat_ex(message: Message):
